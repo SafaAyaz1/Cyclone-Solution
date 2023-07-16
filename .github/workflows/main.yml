@@ -26,7 +26,7 @@ jobs:
           sfdx force:auth:sfdxurl:store --sfdxurlfile=./tmp/sfdc_auth_url --setdefaultdevhubusername --noprompt
 
       - name: Create a scratch org
-        run: sfdx force:org:create -v ${{ secrets.DEVHUB_USERNAME }} -s -f config/project-scratch-def.json -a ciorg
+        run: sfdx force:org:create -v target-dev-hub -s -f config/project-scratch-def.json -a ciorg
 
       - name: Push metadata to scratch org
         run: sfdx force:source:push -u ciorg
