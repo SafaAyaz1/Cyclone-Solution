@@ -1,0 +1,41 @@
+name: CI/CD Pipeline
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Salesforce CLI
+        run: |
+          wget https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
+          mkdir sfdx-cli
+          tar xJf sfdx-linux-amd64.tar.xz -C sfdx-cli --strip-components 1
+          echo 'export PATH=./sfdx-cli/bin:$PATH' >> $GITHUB_ENV
+          echo 'export SFDX_USE_GENERIC_UNIX_KEYCHAIN=true' >> $GITHUB_ENV
+
+      - name: Authenticate with Salesforce
+        run: |
+          echo $SFDC_AUTH_URL > ./tmp/sfdc_auth_url
+          sfdx force:auth:sfdxurl:store --sfdxurlfile=./tmp/sfdc_auth_url --setdefaultdevhubusername --noprompt
+
+      - name: Create a scratch org
+        run: sfdx force:org:create -v ${{ secrets.DEVHUB_USERNAME }} -s -f config/project-scratch-def.json -a ciorg
+
+      - name: Push metadata to scratch org
+        run: sfdx force:source:push -u ciorg
+
+      - name: Run Apex tests
+        run: sfdx force:apex:test:run -u ciorg -c -w 10
+
+      - name: Deploy to Sandbox
+        run: sfdx force:source:deploy -u ciorg -p force-app -l RunLocalTests -w 10
+
+      - name: Delete scratch org
+        run: sfdx force:org:delete -u ciorg -p
