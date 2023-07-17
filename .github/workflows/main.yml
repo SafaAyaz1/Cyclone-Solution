@@ -20,6 +20,9 @@ jobs:
           echo 'export PATH=./sfdx-cli/bin:$PATH' >> $GITHUB_ENV
           echo 'export SFDX_USE_GENERIC_UNIX_KEYCHAIN=true' >> $GITHUB_ENV
 
+      - name: Create temp directory
+        run: mkdir ./tmp
+
       - name: Authenticate with Salesforce
         run: |
           echo $SFDC_AUTH_URL > ./tmp/sfdc_auth_url
