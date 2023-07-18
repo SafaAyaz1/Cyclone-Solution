@@ -10,24 +10,24 @@ public class NestingCheckerUtility {
             if (c.equals('(')) {
                 countParentheses++;
             } else if (c.equals(')')) {
-                countParentheses--;
-                if (countParentheses < 0) {
+                if (countParentheses == 0) {
                     return false;
                 }
+                countParentheses--;
             } else if (c.equals('[')) {
                 countBrackets++;
             } else if (c.equals(']')) {
-                countBrackets--;
-                if (countBrackets < 0) {
+                if (countBrackets == 0) {
                     return false;
                 }
+                countBrackets--;
             } else if (c.equals('{')) {
                 countBraces++;
             } else if (c.equals('}')) {
-                countBraces--;
-                if (countBraces < 0) {
+                if (countBraces == 0) {
                     return false;
                 }
+                countBraces--;
             }
         }
 
