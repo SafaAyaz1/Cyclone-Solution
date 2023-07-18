@@ -27,7 +27,7 @@ jobs:
         sfdx force:auth:sfdxurl:store -f authUrlFile -a CycloneSolutions
 
     - name: Deploy to Salesforce Org
-      run: sfdx force:source:deploy --sourcepath force-app/main/default --wait 10 --json -u CycloneSolutions
+      run: sfdx force:source:deploy --sourcepath force-app/main/default --wait 10 --json -u CycloneSolutions --loglevel debug
 
     - name: Run Apex Tests
       run: sfdx force:apex:test:run --wait 10 --json -u CycloneSolutions
