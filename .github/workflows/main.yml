@@ -1,42 +1,33 @@
-name: CI/CD Pipeline
+name: Salesforce Deployment and Testing
+
 on:
   push:
     branches:
-      - main
+      - main  # Replace with your desired branch
 
 jobs:
-  build:
+  deploy-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Install Salesforce CLI
-        run: |
-          curl https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz | tar xJf -
-          ./sfdx/install
-          echo 'export PATH=/home/runner/sfdx/bin:$PATH' >> $GITHUB_ENV
+    - name: Set up Salesforce CLI
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14
 
-      - name: Create temp directory
-        run: mkdir ./tmp
+    - name: Install Salesforce CLI
+      run: npm install sfdx-cli --global
 
-      - name: Authenticate with Salesforce
-        run: |
-          echo $SFDC_AUTH_URL > ./tmp/sfdc_auth_url
-          /home/runner/sfdx/bin/sfdx force:auth:sfdxurl:store --sfdxurlfile=./tmp/sfdc_auth_url --setdefaultdevhubusername --noprompt
+    - name: Authenticate Salesforce Org
+      run: |
+        echo ${{ secrets.SFDX_AUTH_URL }} > authUrlFile
+        sfdx force:auth:sfdxurl:store -f authUrlFile -a CycloneSolutions
 
-      - name: Create a scratch org
-        run: /home/runner/sfdx/bin/sfdx force:org:create -v target-dev-hub -s -f config/project-scratch-def.json -a ciorg
+    - name: Deploy to Salesforce Org
+      run: sfdx force:source:deploy --sourcepath force-app/main/default --wait 10 --json -u CycloneSolutions
 
-      - name: Push metadata to scratch org
-        run: /home/runner/sfdx/bin/sfdx force:source:push -u ciorg
-
-      - name: Run Apex tests
-        run: /home/runner/sfdx/bin/sfdx force:apex:test:run -u ciorg -c -w 10
-
-      - name: Deploy to Sandbox
-        run: /home/runner/sfdx/bin/sfdx force:source:deploy -u ciorg -p force-app -l RunLocalTests -w 10
-
-      - name: Delete scratch org
-        run: /home/runner/sfdx/bin/sfdx force:org:delete -u ciorg -p
+    - name: Run Apex Tests
+      run: sfdx force:apex:test:run --wait 10 --json -u CycloneSolutions
