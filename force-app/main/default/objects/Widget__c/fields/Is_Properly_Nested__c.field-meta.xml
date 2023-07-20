@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_Properly_Nested__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>If the value is not properly nested, an email is sent to the widget’s owner</description>
+    <externalId>false</externalId>
+    <label>Is Properly Nested</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>
