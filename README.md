@@ -42,5 +42,5 @@ To ensure deployability and maintainability, the solution meets the following cr
 
 ### Testing:
 
-Automated tests for the frontend components have been implemented to improve code quality and ensure a robust frontend.
+Automated tests for the frontend components have been implemented to improve code quality and ensure a robust frontend
 
